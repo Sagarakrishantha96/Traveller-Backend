@@ -28,5 +28,19 @@ namespace Traveller_backend.Controllers
 
             return StatusCode(StatusCodes.Status201Created, result.Data);
         }
+
+        // POST api/auth/login
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] LoginRequest request)
+        {
+            var result = await _authService.LoginAsync(request);
+
+            if (!result.Success)
+            {
+                return Unauthorized(result.ErrorMessage);
+            }
+
+            return Ok(result.Data);
+        }
     }
 }

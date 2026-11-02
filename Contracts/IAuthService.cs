@@ -7,5 +7,6 @@ namespace Traveller_backend.Contracts
     public interface IAuthService
     {
         Task<ServiceResult<UserResponse>> RegisterAsync(RegisterRequest request);
+        Task<ServiceResult<LoginResponse>> LoginAsync(LoginRequest request);
     }
 }
