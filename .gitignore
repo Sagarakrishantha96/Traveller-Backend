@@ -1,0 +1,14 @@
+# Build output
+bin/
+obj/
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+
+# Local settings (contains DB password)
+appsettings.Development.json
+
+# Backup files
+*Backup*.csproj
