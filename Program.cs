@@ -1,5 +1,8 @@
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Traveller_backend.Contracts;
 using Traveller_backend.EntityModels;
 using Traveller_backend.Repositories;
@@ -35,6 +38,22 @@ builder.Services.AddDbContext<TravelDbContext>(options =>
 builder.Services.AddScoped<IAuthRepository, EFAuthRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 
+// JWT login tokens - add [Authorize] to an endpoint to require a logged-in user
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
+        };
+    });
+
 // Allow the React frontend to call this API
 builder.Services.AddCors(options =>
 {
@@ -57,6 +76,7 @@ app.UseHttpsRedirection();
 
 app.UseCors("Frontend");
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

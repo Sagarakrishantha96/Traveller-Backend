@@ -7,5 +7,6 @@ namespace Traveller_backend.Contracts
     {
         Task<bool> EmailExistsAsync(string email);
         Task<User> AddUserAsync(User user);
+        Task<User?> GetUserByEmailAsync(string email);
     }
 }
