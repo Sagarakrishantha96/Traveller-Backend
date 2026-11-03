@@ -29,6 +29,27 @@ namespace Traveller_backend.Repositories
                 .ToListAsync();
         }
 
+        public async Task<Place?> GetPlaceByIdAsync(int id)
+        {
+            return await _context.Places.AsNoTracking().FirstOrDefaultAsync(p => p.Id == id);
+        }
+
+        public async Task<List<Attraction>> GetAttractionsWithImagesAsync()
+        {
+            return await _context.Attractions
+                .AsNoTracking()
+                .Where(a => a.ImageUrl != null)
+                .ToListAsync();
+        }
+
+        public async Task<Dictionary<int, int>> GetAttractionCountsAsync()
+        {
+            return await _context.Attractions
+                .GroupBy(a => a.PlaceId)
+                .Select(g => new { PlaceId = g.Key, Count = g.Count() })
+                .ToDictionaryAsync(x => x.PlaceId, x => x.Count);
+        }
+
         public async Task<List<Attraction>> GetAttractionsInAreaAsync(GeoBounds bounds, string? category)
         {
             var attractions = _context.Attractions

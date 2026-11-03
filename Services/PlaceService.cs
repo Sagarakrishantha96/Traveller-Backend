@@ -21,13 +21,21 @@ namespace Traveller_backend.Services
             var limit = string.IsNullOrWhiteSpace(query) ? int.MaxValue : SearchLimit;
             var places = await _placeRepository.SearchPlacesAsync(query?.Trim(), limit);
 
+            // Each place uses the photo of its best-rated attraction
+            var images = (await _placeRepository.GetAttractionsWithImagesAsync())
+                .GroupBy(a => a.PlaceId)
+                .ToDictionary(g => g.Key, g => g.OrderByDescending(a => a.Rating ?? 0).First().ImageUrl);
+            var counts = await _placeRepository.GetAttractionCountsAsync();
+
             return places.Select(p => new PlaceResponse
             {
                 Id = p.Id,
                 Name = p.Name,
                 District = p.District,
                 Latitude = p.Latitude,
-                Longitude = p.Longitude
+                Longitude = p.Longitude,
+                ImageUrl = images.GetValueOrDefault(p.Id),
+                AttractionCount = counts.GetValueOrDefault(p.Id)
             }).ToList();
         }
 

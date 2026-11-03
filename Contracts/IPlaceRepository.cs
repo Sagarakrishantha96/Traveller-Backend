@@ -7,6 +7,9 @@ namespace Traveller_backend.Contracts
     public interface IPlaceRepository
     {
         Task<List<Place>> SearchPlacesAsync(string? query, int limit);
+        Task<Place?> GetPlaceByIdAsync(int id);
+        Task<List<Attraction>> GetAttractionsWithImagesAsync();
+        Task<Dictionary<int, int>> GetAttractionCountsAsync();
         Task<List<Attraction>> GetAttractionsInAreaAsync(GeoBounds bounds, string? category);
         Task<List<Stay>> GetStaysInAreaAsync(GeoBounds bounds, string? type, decimal? maxPrice);
     }
