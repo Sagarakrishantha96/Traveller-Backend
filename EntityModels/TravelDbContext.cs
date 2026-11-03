@@ -9,6 +9,9 @@ namespace Traveller_backend.EntityModels
         }
 
         public DbSet<User> Users => Set<User>();
+        public DbSet<Place> Places => Set<Place>();
+        public DbSet<Attraction> Attractions => Set<Attraction>();
+        public DbSet<Stay> Stays => Set<Stay>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

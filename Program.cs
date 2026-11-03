@@ -37,6 +37,8 @@ builder.Services.AddDbContext<TravelDbContext>(options =>
 // Repositories and services
 builder.Services.AddScoped<IAuthRepository, EFAuthRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IPlaceRepository, EFPlaceRepository>();
+builder.Services.AddScoped<IPlaceService, PlaceService>();
 
 // JWT login tokens - add [Authorize] to an endpoint to require a logged-in user
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
