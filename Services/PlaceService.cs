@@ -27,16 +27,9 @@ namespace Traveller_backend.Services
                 .ToDictionary(g => g.Key, g => g.OrderByDescending(a => a.Rating ?? 0).First().ImageUrl);
             var counts = await _placeRepository.GetAttractionCountsAsync();
 
-            return places.Select(p => new PlaceResponse
-            {
-                Id = p.Id,
-                Name = p.Name,
-                District = p.District,
-                Latitude = p.Latitude,
-                Longitude = p.Longitude,
-                ImageUrl = images.GetValueOrDefault(p.Id),
-                AttractionCount = counts.GetValueOrDefault(p.Id)
-            }).ToList();
+            return places
+                .Select(p => ResponseMapper.ToPlaceResponse(p, images.GetValueOrDefault(p.Id), counts.GetValueOrDefault(p.Id)))
+                .ToList();
         }
 
         public async Task<List<AttractionResponse>> GetNearbyAttractionsAsync(decimal latitude, decimal longitude, double radiusKm, string? category)
@@ -46,24 +39,7 @@ namespace Traveller_backend.Services
             var attractions = await _placeRepository.GetAttractionsInAreaAsync(bounds, category);
 
             return attractions
-                .Select(a => new AttractionResponse
-                {
-                    Id = a.Id,
-                    PlaceId = a.PlaceId,
-                    PlaceName = a.Place.Name,
-                    Name = a.Name,
-                    Description = a.Description,
-                    Category = a.Category,
-                    VisitHours = a.VisitHours,
-                    OpenTime = a.OpenTime?.ToString(@"hh\:mm"),
-                    CloseTime = a.CloseTime?.ToString(@"hh\:mm"),
-                    TicketPrice = a.TicketPrice,
-                    Rating = a.Rating,
-                    Latitude = a.Latitude,
-                    Longitude = a.Longitude,
-                    ImageUrl = a.ImageUrl,
-                    DistanceKm = Math.Round(GeoHelper.DistanceKm(latitude, longitude, a.Latitude, a.Longitude), 1)
-                })
+                .Select(a => ResponseMapper.ToAttractionResponse(a, latitude, longitude))
                 .Where(a => a.DistanceKm <= radiusKm)
                 .OrderBy(a => a.DistanceKm)
                 .ToList();
@@ -75,23 +51,7 @@ namespace Traveller_backend.Services
             var stays = await _placeRepository.GetStaysInAreaAsync(bounds, type, maxPrice);
 
             return stays
-                .Select(s => new StayResponse
-                {
-                    Id = s.Id,
-                    PlaceId = s.PlaceId,
-                    PlaceName = s.Place.Name,
-                    Name = s.Name,
-                    Type = s.Type,
-                    PricePerNight = s.PricePerNight,
-                    Rating = s.Rating,
-                    Address = s.Address,
-                    Phone = s.Phone,
-                    BookingUrl = s.BookingUrl,
-                    ImageUrl = s.ImageUrl,
-                    Latitude = s.Latitude,
-                    Longitude = s.Longitude,
-                    DistanceKm = Math.Round(GeoHelper.DistanceKm(latitude, longitude, s.Latitude, s.Longitude), 1)
-                })
+                .Select(s => ResponseMapper.ToStayResponse(s, latitude, longitude))
                 .Where(s => s.DistanceKm <= radiusKm)
                 .OrderBy(s => s.DistanceKm)
                 .ToList();

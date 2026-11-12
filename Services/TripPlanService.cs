@@ -18,8 +18,6 @@ namespace Traveller_backend.Services
         private const int MaxAttractionsPerDay = 4;
         private const double AttractionRadiusKm = 40;
         private const double StayRadiusKm = 15;
-        private const double LocalSpeedKmh = 35;            // tuk-tuk / car between sights
-        private const double RoadFactor = 1.35;
 
         private readonly IPlaceRepository _placeRepository;
         private readonly IPlaceService _placeService;
@@ -55,8 +53,8 @@ namespace Traveller_backend.Services
 
             var plan = new TripPlanResponse
             {
-                From = ToPlaceResponse(from),
-                To = ToPlaceResponse(to),
+                From = ResponseMapper.ToPlaceResponse(from),
+                To = ResponseMapper.ToPlaceResponse(to),
                 NumberOfDays = request.Days,
                 StartDate = request.StartDate!.Value.ToString("yyyy-MM-dd"),
                 CoverImageUrl = remaining.FirstOrDefault(a => a.ImageUrl != null)?.ImageUrl,
@@ -145,7 +143,7 @@ namespace Traveller_backend.Services
         // When we could visit this attraction next, or null if it doesn't fit today
         private static ScheduledVisit? Schedule(AttractionResponse a, (decimal Lat, decimal Lng) position, int time, int dayEnd, Place? mustReturnTo)
         {
-            var travel = TravelMinutes(position.Lat, position.Lng, a.Latitude, a.Longitude);
+            var travel = GeoHelper.LocalTravelMinutes(position.Lat, position.Lng, a.Latitude, a.Longitude);
             var start = time + travel;
             var open = ParseTime(a.OpenTime);
             var close = ParseTime(a.CloseTime);
@@ -156,7 +154,7 @@ namespace Traveller_backend.Services
             if (close.HasValue && end > close) return null;
 
             // On the last day we also need time to get back to the bus/train
-            var finish = mustReturnTo == null ? end : end + TravelMinutes(a.Latitude, a.Longitude, mustReturnTo.Latitude, mustReturnTo.Longitude);
+            var finish = mustReturnTo == null ? end : end + GeoHelper.LocalTravelMinutes(a.Latitude, a.Longitude, mustReturnTo.Latitude, mustReturnTo.Longitude);
             if (finish > dayEnd) return null;
 
             // Rating counts most (4.8 is far better than 4.2), and far-away places lose points.
@@ -214,23 +212,9 @@ namespace Traveller_backend.Services
             return $"Relax in {destination}";
         }
 
-        // Time by tuk-tuk/car between two points, rounded up to 5 minutes (at least 10)
-        private static int TravelMinutes(decimal lat1, decimal lng1, decimal lat2, decimal lng2)
-        {
-            var km = GeoHelper.DistanceKm(lat1, lng1, lat2, lng2) * RoadFactor;
-            return Math.Max(10, (int)Math.Ceiling(km / LocalSpeedKmh * 60 / 5) * 5);
-        }
 
         private static int? ParseTime(string? time) =>
             TimeSpan.TryParse(time, out var t) ? (int)t.TotalMinutes : null;
 
-        private static PlaceResponse ToPlaceResponse(Place p) => new()
-        {
-            Id = p.Id,
-            Name = p.Name,
-            District = p.District,
-            Latitude = p.Latitude,
-            Longitude = p.Longitude
-        };
     }
 }
