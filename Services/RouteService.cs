@@ -119,6 +119,7 @@ namespace Traveller_backend.Services
                 var route = l.Direction.Route;
                 return new RouteLegResponse
                 {
+                    RouteId = route.Id,
                     Mode = route.Mode,
                     RouteNumber = route.RouteNumber,
                     RouteName = route.Name,

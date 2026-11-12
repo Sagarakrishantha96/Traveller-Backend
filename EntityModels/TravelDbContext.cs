@@ -14,6 +14,9 @@ namespace Traveller_backend.EntityModels
         public DbSet<Stay> Stays => Set<Stay>();
         public DbSet<TransportRoute> TransportRoutes => Set<TransportRoute>();
         public DbSet<RouteStop> RouteStops => Set<RouteStop>();
+        public DbSet<Trip> Trips => Set<Trip>();
+        public DbSet<TripDay> TripDays => Set<TripDay>();
+        public DbSet<TripItem> TripItems => Set<TripItem>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -31,6 +34,12 @@ namespace Traveller_backend.EntityModels
                 .HasOne(s => s.Route)
                 .WithMany(r => r.Stops)
                 .HasForeignKey(s => s.RouteId);
+
+            // activities.day_id -> itinerary_days.id
+            modelBuilder.Entity<TripItem>()
+                .HasOne(i => i.Day)
+                .WithMany(d => d.Items)
+                .HasForeignKey(i => i.DayId);
         }
     }
 }

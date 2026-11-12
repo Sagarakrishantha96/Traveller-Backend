@@ -42,6 +42,8 @@ builder.Services.AddScoped<IPlaceService, PlaceService>();
 builder.Services.AddScoped<IRouteRepository, EFRouteRepository>();
 builder.Services.AddScoped<IRouteService, RouteService>();
 builder.Services.AddScoped<ITripPlanService, TripPlanService>();
+builder.Services.AddScoped<ITripRepository, EFTripRepository>();
+builder.Services.AddScoped<ITripService, TripService>();
 
 // JWT login tokens - add [Authorize] to an endpoint to require a logged-in user
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
