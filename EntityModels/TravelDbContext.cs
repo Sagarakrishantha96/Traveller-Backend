@@ -12,6 +12,8 @@ namespace Traveller_backend.EntityModels
         public DbSet<Place> Places => Set<Place>();
         public DbSet<Attraction> Attractions => Set<Attraction>();
         public DbSet<Stay> Stays => Set<Stay>();
+        public DbSet<TransportRoute> TransportRoutes => Set<TransportRoute>();
+        public DbSet<RouteStop> RouteStops => Set<RouteStop>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -23,6 +25,12 @@ namespace Traveller_backend.EntityModels
                 entity.Property(u => u.PasswordHash).HasMaxLength(255);
                 entity.Property(u => u.Phone).HasMaxLength(20);
             });
+
+            // route_stops.route_id -> transport_routes.id (name doesn't follow EF's naming convention)
+            modelBuilder.Entity<RouteStop>()
+                .HasOne(s => s.Route)
+                .WithMany(r => r.Stops)
+                .HasForeignKey(s => s.RouteId);
         }
     }
 }
