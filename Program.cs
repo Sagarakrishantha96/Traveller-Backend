@@ -37,6 +37,8 @@ builder.Services.AddDbContext<TravelDbContext>(options =>
 // Repositories and services
 builder.Services.AddScoped<IAuthRepository, EFAuthRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IAdminRepository, EFAdminRepository>();
+builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddScoped<IPlaceRepository, EFPlaceRepository>();
 builder.Services.AddScoped<IPlaceService, PlaceService>();
 builder.Services.AddScoped<IRouteRepository, EFRouteRepository>();

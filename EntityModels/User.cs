@@ -21,6 +21,9 @@ namespace Traveller_backend.EntityModels
         [Column("phone")]
         public string? Phone { get; set; }
 
+        [Column("role")]
+        public string Role { get; set; } = "User";      // User / Admin
+
         [Column("created_at")]
         public DateTime CreatedAt { get; set; }
 

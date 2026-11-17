@@ -70,7 +70,8 @@ namespace Traveller_backend.Services
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                new Claim(ClaimTypes.Name, user.FullName)
+                new Claim(ClaimTypes.Name, user.FullName),
+                new Claim(ClaimTypes.Role, user.Role)       // used by [Authorize(Roles = "Admin")]
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!));
@@ -91,6 +92,7 @@ namespace Traveller_backend.Services
             FullName = user.FullName,
             Email = user.Email,
             Phone = user.Phone,
+            Role = user.Role,
             CreatedAt = user.CreatedAt
         };
     }
