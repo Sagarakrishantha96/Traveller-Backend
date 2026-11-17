@@ -20,6 +20,7 @@ namespace Traveller_backend.APIModels
     // One bus or train ride
     public class RouteLegResponse
     {
+        [JsonIgnore] public int RouteId { get; set; }
         public string Mode { get; set; } = string.Empty;            // Bus / Train
         public string RouteNumber { get; set; } = string.Empty;
         public string RouteName { get; set; } = string.Empty;

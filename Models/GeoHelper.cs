@@ -7,6 +7,8 @@ namespace Traveller_backend.Models
     public static class GeoHelper
     {
         private const double EarthRadiusKm = 6371;
+        private const double RoadFactor = 1.35;             // roads are longer than a straight line
+        private const double LocalSpeedKmh = 35;            // tuk-tuk / car between sights
 
         // Straight-line distance between two points (Haversine formula)
         public static double DistanceKm(decimal lat1, decimal lng1, decimal lat2, decimal lng2)
@@ -31,6 +33,13 @@ namespace Traveller_backend.Models
                 latitude + (decimal)latDelta,
                 longitude - (decimal)lngDelta,
                 longitude + (decimal)lngDelta);
+        }
+
+        // Time by tuk-tuk/car between two points, rounded up to 5 minutes (at least 10)
+        public static int LocalTravelMinutes(decimal lat1, decimal lng1, decimal lat2, decimal lng2)
+        {
+            var km = DistanceKm(lat1, lng1, lat2, lng2) * RoadFactor;
+            return Math.Max(10, (int)Math.Ceiling(km / LocalSpeedKmh * 60 / 5) * 5);
         }
 
         private static double ToRadians(double degrees) => degrees * Math.PI / 180;
